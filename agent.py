@@ -178,8 +178,15 @@ def _accept_trade_decision(state, player_id):
 
 def choose_action(state, player_id, allowed_actions):
     agent = _get_agent(player_id)
-    allowed_actions = list(allowed_actions)
-    state = np.asarray(state, dtype=np.float32)
+    allowed_actions = [int(action) for action in allowed_actions]
+
+    vector = state["vector"] if isinstance(state, dict) else state
+    state = np.asarray(vector, dtype=np.float32)
+
+    if state.shape != (STATE_DIM,):
+        raise ValueError(
+            f"expected state vector shape ({STATE_DIM},), got {state.shape}"
+        )
 
     if int(ActionType.BUY_PROPERTY) in allowed_actions:
         sq = _own_position(state)
